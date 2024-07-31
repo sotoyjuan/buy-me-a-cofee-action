@@ -1,9 +1,13 @@
-import express, { Request, Response } from "express";
 import cors from "cors";
+import express, { Request, Response } from "express";
 import path from "path";
 
-import { serializeTransaction, TransactionSerializable } from "viem";
-import { parseUnits, encodeFunctionData } from "viem";
+import {
+  encodeFunctionData,
+  parseUnits,
+  serializeTransaction,
+  TransactionSerializable,
+} from "viem";
 
 const app = express();
 
@@ -93,7 +97,7 @@ app.get("/api/tip", (req: Request, res: Response) => {
   const description =
     "Support me by buying me a coffee using USDC. Choose an amount or enter a custom amount.";
   const imageUrl =
-    "https://buy-me-a-cofee-action.vercel.app/images/buy-me-coffee.jpg";
+    "https://buy-me-a-cofee-action-sotoijuan.vercel.app/images/buy-me-coffee.png";
 
   const jsonResponse = {
     title,
@@ -141,7 +145,7 @@ app.get("/api/tip/:amount", (req: Request, res: Response) => {
   const acceptHeader = req.get("Accept");
   const title = `Tip ${amount} USDC`;
   const description = `Tip ${amount} USDC to support.`;
-  const imageUrl = "/images/buy-me-coffee.jpg";
+  const imageUrl = "/images/buy-me-coffee.png";
 
   if (acceptHeader && acceptHeader.includes("text/html")) {
     // If the request accepts HTML, send the HTML page with meta tags
@@ -205,5 +209,10 @@ export async function prepareUSDCTransaction(
   const serializedTx = serializeTransaction(transactionData);
   return serializedTx;
 }
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 export default app;
