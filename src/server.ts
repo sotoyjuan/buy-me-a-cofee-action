@@ -2,12 +2,12 @@ import cors from "cors";
 import express, { Request, Response } from "express";
 import path from "path";
 
-import {
-  encodeFunctionData,
-  parseUnits,
-  serializeTransaction,
-  TransactionSerializable,
-} from "viem";
+// import {
+//   encodeFunctionData,
+//   parseUnits,
+//   serializeTransaction,
+//   TransactionSerializable,
+// } from "viem";
 
 const app = express();
 
@@ -30,11 +30,9 @@ app.get("/", (req, res) => {
 });
 
 const DONATION_DESTINATION_WALLET =
-  "0x66fe4806cD41BcD308c9d2f6815AEf6b2e38f9a3";
-const DONATION_AMOUNT_USDC_OPTIONS = [10, 50, 100];
-const DEFAULT_DONATION_AMOUNT_USDC = 10;
-
-const USDC_CONTRACT_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; // Mainnet USDC address
+  "0x046da3ee187b8b0d3716f1c08b0c751f62ce9df30e8513a1c070526cfab12507";
+const OPTIONS_DONATION_AMOUNT_STRK = [10, 50, 100];
+// const DEFAULT_DONATION_AMOUNT_STRK = 10;
 
 function generateHtmlWithMetaTags(
   title: string,
@@ -42,7 +40,7 @@ function generateHtmlWithMetaTags(
   imageUrl: string,
   amount?: string
 ): string {
-  const baseUrl = "https://buy-me-a-cofee-action.vercel.app/api/tip";
+  const baseUrl = "https://buy-me-a-cofee-action-sotoijuan.vercel.app/api/tip";
   const urlToUnfurl = amount ? `${baseUrl}/${amount}` : baseUrl;
 
   return `
@@ -95,7 +93,7 @@ function generateHtmlWithMetaTags(
 app.get("/api/tip", (req: Request, res: Response) => {
   const title = "Buy Me a Coffee";
   const description =
-    "Support me by buying me a coffee using USDC. Choose an amount or enter a custom amount.";
+    "Support me by buying me a coffee using STRK. Choose an amount or enter a custom amount.";
   const imageUrl =
     "https://buy-me-a-cofee-action-sotoijuan.vercel.app/images/buy-me-coffee.png";
 
@@ -105,8 +103,8 @@ app.get("/api/tip", (req: Request, res: Response) => {
     description,
     links: {
       actions: [
-        ...DONATION_AMOUNT_USDC_OPTIONS.map((amount) => ({
-          label: `${amount} USDC`,
+        ...OPTIONS_DONATION_AMOUNT_STRK.map((amount) => ({
+          label: `${amount} STRK`,
           href: `/api/tip?amount=${amount}`,
         })),
         {
@@ -115,13 +113,13 @@ app.get("/api/tip", (req: Request, res: Response) => {
           parameters: [
             {
               name: "amount",
-              label: "Enter a custom USD amount",
+              label: "Enter a custom STRK amount",
             },
           ],
         },
       ],
     },
-    isEthereum: true,
+    isStarknet: true,
   };
 
   const acceptHeader = req.get("Accept");
@@ -143,8 +141,8 @@ app.get("/api/tip", (req: Request, res: Response) => {
 app.get("/api/tip/:amount", (req: Request, res: Response) => {
   const amount = req.params.amount;
   const acceptHeader = req.get("Accept");
-  const title = `Tip ${amount} USDC`;
-  const description = `Tip ${amount} USDC to support.`;
+  const title = `Tip ${amount} STRK`;
+  const description = `Tip ${amount} STRK to support.`;
   const imageUrl = "/images/buy-me-coffee.png";
 
   if (acceptHeader && acceptHeader.includes("text/html")) {
@@ -164,7 +162,7 @@ app.get("/api/tip/:amount", (req: Request, res: Response) => {
           },
         ],
       },
-      isEthereum: true,
+      isStarknet: true,
     };
     res.json(response);
   }
@@ -183,31 +181,33 @@ app.post("/api/tip", async (req: Request, res: Response) => {
 });
 
 export async function prepareUSDCTransaction(
-  to: `0x${string}`,
+  to: string,
   amount: string,
   chainId: number
 ): Promise<string> {
-  const transactionData: TransactionSerializable = {
-    to: USDC_CONTRACT_ADDRESS,
-    data: encodeFunctionData({
-      abi: [
-        {
-          name: "transfer",
-          type: "function",
-          inputs: [
-            { name: "recipient", type: "address" },
-            { name: "amount", type: "uint256" },
-          ],
-          outputs: [{ type: "bool" }],
-        },
-      ],
-      args: [to, parseUnits(amount, 6)], // USDC has 6 decimal places
-    }),
-    chainId,
-    type: "eip1559",
-  };
-  const serializedTx = serializeTransaction(transactionData);
-  return serializedTx;
+  console.log(to, amount, chainId);
+  // const transactionData: TransactionSerializable = {
+  //   to: USDC_CONTRACT_ADDRESS,
+  //   data: encodeFunctionData({
+  //     abi: [
+  //       {
+  //         name: "transfer",
+  //         type: "function",
+  //         inputs: [
+  //           { name: "recipient", type: "address" },
+  //           { name: "amount", type: "uint256" },
+  //         ],
+  //         outputs: [{ type: "bool" }],
+  //       },
+  //     ],
+  //     args: [to, parseUnits(amount, 6)], // USDC has 6 decimal places
+  //   }),
+  //   chainId,
+  //   type: "eip1559",
+  // };
+  // const serializedTx = serializeTransaction(transactionData);
+  // return serializedTx;
+  return "";
 }
 
 const port = process.env.PORT || 3000;
