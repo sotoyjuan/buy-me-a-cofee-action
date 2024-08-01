@@ -2,13 +2,6 @@ import cors from "cors";
 import express, { Request, Response } from "express";
 import path from "path";
 
-// import {
-//   encodeFunctionData,
-//   parseUnits,
-//   serializeTransaction,
-//   TransactionSerializable,
-// } from "viem";
-
 const app = express();
 
 // Configure CORS
@@ -32,7 +25,8 @@ app.get("/", (req, res) => {
 const DONATION_DESTINATION_WALLET =
   "0x046da3ee187b8b0d3716f1c08b0c751f62ce9df30e8513a1c070526cfab12507";
 const OPTIONS_DONATION_AMOUNT_STRK = [10, 50, 100];
-// const DEFAULT_DONATION_AMOUNT_STRK = 10;
+const STRK_CONTRACT_ADDRESS =
+  "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
 
 function generateHtmlWithMetaTags(
   title: string,
@@ -171,43 +165,19 @@ app.get("/api/tip/:amount", (req: Request, res: Response) => {
 app.post("/api/tip", async (req: Request, res: Response) => {
   const { amount } = req.query;
 
-  const transaction = await prepareUSDCTransaction(
-    DONATION_DESTINATION_WALLET,
-    amount as string,
-    1
-  );
+  const transaction = await prepareSTRKTransaction(amount as string);
 
   res.json({ transaction });
 });
 
-export async function prepareUSDCTransaction(
-  to: string,
-  amount: string,
-  chainId: number
-): Promise<string> {
-  console.log(to, amount, chainId);
-  // const transactionData: TransactionSerializable = {
-  //   to: USDC_CONTRACT_ADDRESS,
-  //   data: encodeFunctionData({
-  //     abi: [
-  //       {
-  //         name: "transfer",
-  //         type: "function",
-  //         inputs: [
-  //           { name: "recipient", type: "address" },
-  //           { name: "amount", type: "uint256" },
-  //         ],
-  //         outputs: [{ type: "bool" }],
-  //       },
-  //     ],
-  //     args: [to, parseUnits(amount, 6)], // USDC has 6 decimal places
-  //   }),
-  //   chainId,
-  //   type: "eip1559",
-  // };
-  // const serializedTx = serializeTransaction(transactionData);
-  // return serializedTx;
-  return "";
+export async function prepareSTRKTransaction(amount: string): Promise<string> {
+  const transferData = {
+    contractAddress: STRK_CONTRACT_ADDRESS,
+    amount,
+    to: DONATION_DESTINATION_WALLET,
+  };
+
+  return JSON.stringify(transferData);
 }
 
 const port = process.env.PORT || 3000;
