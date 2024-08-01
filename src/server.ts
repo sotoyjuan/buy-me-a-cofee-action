@@ -2,7 +2,7 @@ import cors from "cors";
 import express, { Request, Response } from "express";
 import path from "path";
 // import { cairo, Call, Contract, RpcProvider, Uint256 } from "starknet";
-import { Call, Contract, RpcProvider } from "starknet";
+import { Call, Contract, RpcProvider, uint256 } from "starknet";
 import { abi } from "./strk-abi";
 
 const app = express();
@@ -180,9 +180,13 @@ app.post("/api/tip", async (req: Request, res: Response) => {
 });
 
 export async function prepareSTRKTransaction(amount: string): Promise<string> {
+  const formattedAmount = uint256.bnToUint256(
+    BigInt(parseFloat(amount) * 10 ** 18)
+  );
+
   const transferCall: Call = strkContract.populate("transfer", {
     recipient: DONATION_DESTINATION_WALLET,
-    amount,
+    amount: formattedAmount,
   });
 
   return JSON.stringify(transferCall);
