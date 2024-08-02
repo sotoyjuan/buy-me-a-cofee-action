@@ -1,8 +1,7 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
 import path from "path";
-// import { cairo, Call, Contract, RpcProvider, Uint256 } from "starknet";
-import { Call, Contract, RpcProvider, uint256 } from "starknet";
+import { Call, Contract, uint256 } from "starknet";
 import { abi } from "./strk-abi";
 
 const app = express();
@@ -31,11 +30,7 @@ const OPTIONS_DONATION_AMOUNT_STRK = [10, 50, 100];
 const STRK_CONTRACT_ADDRESS =
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
 
-const provider = new RpcProvider({
-  nodeUrl: "https://free-rpc.nethermind.io/sepolia-juno/",
-});
-
-const strkContract = new Contract(abi, STRK_CONTRACT_ADDRESS, provider);
+const strkContract = new Contract(abi, STRK_CONTRACT_ADDRESS);
 
 function generateHtmlWithMetaTags(
   title: string,
